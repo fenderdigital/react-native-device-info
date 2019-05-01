@@ -10,17 +10,10 @@
 #include <arpa/inet.h>
 #import "RNDeviceInfo.h"
 #import "DeviceUID.h"
-#if !(TARGET_OS_TV)
-#import <LocalAuthentication/LocalAuthentication.h>
-#endif
 
 @interface RNDeviceInfo()
 @property (nonatomic) bool isEmulator;
 @end
-
-#if !(TARGET_OS_TV)
-@import CoreTelephony;
-#endif
 
 @implementation RNDeviceInfo
 
@@ -160,23 +153,12 @@ RCT_EXPORT_MODULE(RNDeviceInfo)
 
 - (NSString *) carrier
 {
-#if (TARGET_OS_TV)
-    return nil;
-#else
-    CTTelephonyNetworkInfo *netinfo = [[CTTelephonyNetworkInfo alloc] init];
-    CTCarrier *carrier = [netinfo subscriberCellularProvider];
-    return carrier.carrierName;
-#endif
+  return nil;
 }
 
 - (NSString*) userAgent
 {
-#if TARGET_OS_TV
-    return @"not available";
-#else
-    UIWebView* webView = [[UIWebView alloc] initWithFrame:CGRectZero];
-    return [webView stringByEvaluatingJavaScriptFromString:@"navigator.userAgent"];
-#endif
+  return @"FENDER TEST";
 }
 
 - (NSString*) deviceLocale
@@ -333,13 +315,8 @@ RCT_EXPORT_METHOD(getIpAddress:(RCTPromiseResolveBlock)resolve rejecter:(RCTProm
 
 RCT_EXPORT_METHOD(isPinOrFingerprintSet:(RCTResponseSenderBlock)callback)
 {
-  #if TARGET_OS_TV
-    BOOL isPinOrFingerprintSet = false;
-  #else
-    LAContext *context = [[LAContext alloc] init];
-    BOOL isPinOrFingerprintSet = ([context canEvaluatePolicy:LAPolicyDeviceOwnerAuthentication error:nil]);
-  #endif
-    callback(@[[NSNumber numberWithBool:isPinOrFingerprintSet]]);
+  BOOL isPinOrFingerprintSet = false;
+  callback(@[[NSNumber numberWithBool:isPinOrFingerprintSet]]);
 }
 
 RCT_EXPORT_METHOD(getBatteryLevel:(RCTPromiseResolveBlock)resolve rejecter:(RCTPromiseRejectBlock)reject)
